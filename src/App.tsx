@@ -4,7 +4,6 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { Layout } from './components/Layout';
-import { CustomCursor } from './components/CustomCursor';
 import { CommandPalette } from './components/CommandPalette';
 import { AIChatWidget } from './components/AIChatWidget';
 import { AnimatedBackground } from './components/AnimatedBackground';
@@ -48,7 +47,6 @@ function App() {
           <AnimatedBackground />
           
           {/* Global overlays */}
-          <CustomCursor />
           <CommandPalette />
 
           <Routes>

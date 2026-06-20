@@ -7,7 +7,7 @@ export const NotFound: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-base">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-transparent">
       <div className="glow-orb w-[600px] h-[600px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-20" />
       <div className="noise-overlay" />
 

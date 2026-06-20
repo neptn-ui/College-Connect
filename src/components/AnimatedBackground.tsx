@@ -2,16 +2,16 @@ import React from 'react';
 
 export const AnimatedBackground: React.FC = () => {
   return (
-    <div className="fixed inset-0 z-[-1] overflow-hidden bg-base pointer-events-none">
-      <div className="absolute inset-0 opacity-20 transition-opacity duration-1000 ease-in-out">
+    <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-base">
+      <div className="absolute inset-0 opacity-100">
         {/* Orb 1: Brand color, moving diagonally */}
-        <div className="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full mix-blend-screen filter blur-[100px] opacity-60 bg-brand animate-blob-slow" />
+        <div className="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full mix-blend-screen blur-[120px] opacity-25 bg-brand animate-blob-slow" />
         
         {/* Orb 2: Brand light, moving inversely */}
-        <div className="absolute top-[20%] -right-[10%] w-[45vw] h-[45vw] rounded-full mix-blend-screen filter blur-[100px] opacity-50 bg-brand-light animate-blob-medium" />
+        <div className="absolute top-[20%] -right-[10%] w-[45vw] h-[45vw] rounded-full mix-blend-screen blur-[120px] opacity-20 bg-brand-light animate-blob-medium" />
         
         {/* Orb 3: Brand hover, moving bottom left */}
-        <div className="absolute -bottom-[20%] left-[20%] w-[60vw] h-[60vw] rounded-full mix-blend-screen filter blur-[120px] opacity-40 bg-brand-hover animate-blob-fast" />
+        <div className="absolute -bottom-[20%] left-[20%] w-[60vw] h-[60vw] rounded-full mix-blend-screen blur-[140px] opacity-15 bg-brand-hover animate-blob-fast" />
       </div>
       
       {/* Subtle noise texture overlay for premium matte feel */}

@@ -84,7 +84,7 @@ export const Landing: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-base text-white relative overflow-hidden">
+    <div className="min-h-screen bg-transparent text-white relative overflow-hidden">
       {/* ── Ambient Glow Orbs ────────────────────────────────── */}
       <div className="glow-orb" style={{ width: 600, height: 600, top: -200, left: '30%' }} />
       <div className="glow-orb" style={{ width: 500, height: 500, top: 400, right: -100, opacity: 0.7 }} />

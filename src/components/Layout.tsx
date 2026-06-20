@@ -47,7 +47,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="min-h-screen flex bg-[#050510] text-white">
+    <div className="min-h-screen flex bg-transparent text-white">
       {/* SIDEBAR */}
       <aside className={`fixed inset-y-0 left-0 z-40 w-64 sidebar-glass border-r border-white/[0.06] transition-transform duration-300 lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col justify-between`}>
         <div>
