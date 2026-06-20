@@ -2,7 +2,11 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { ToastProvider } from './contexts/ToastContext';
 import { Layout } from './components/Layout';
+import { CustomCursor } from './components/CustomCursor';
+import { CommandPalette } from './components/CommandPalette';
+import { AIChatWidget } from './components/AIChatWidget';
 
 // Pages
 import { Landing } from './pages/Landing';
@@ -17,6 +21,7 @@ import { Groups } from './pages/Groups';
 import { LostFound } from './pages/LostFound';
 import { TeacherDashboard } from './pages/TeacherDashboard';
 import { Settings } from './pages/Settings';
+import { NotFound } from './pages/NotFound';
 
 // Route Guard to verify authentication
 const ProtectedRoute: React.FC<{ children: React.ReactNode; allowedRole?: 'student' | 'faculty' }> = ({ children, allowedRole }) => {
@@ -37,92 +42,101 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; allowedRole?: 'stude
 function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <Routes>
-          {/* Public Landing & Authentication */}
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+      <ToastProvider>
+        <AuthProvider>
+          {/* Global overlays */}
+          <CustomCursor />
+          <CommandPalette />
 
-          {/* Student Dashboards */}
-          <Route path="/student-dashboard" element={
-            <ProtectedRoute allowedRole="student">
-              <Layout>
-                <StudentDashboard />
-              </Layout>
-            </ProtectedRoute>
-          } />
+          <Routes>
+            {/* Public Landing & Authentication */}
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
 
-          {/* Teacher Dashboards */}
-          <Route path="/teacher-dashboard" element={
-            <ProtectedRoute allowedRole="faculty">
-              <Layout>
-                <TeacherDashboard />
-              </Layout>
-            </ProtectedRoute>
-          } />
+            {/* Student Dashboards */}
+            <Route path="/student-dashboard" element={
+              <ProtectedRoute allowedRole="student">
+                <Layout>
+                  <StudentDashboard />
+                </Layout>
+              </ProtectedRoute>
+            } />
 
-          {/* Shared Pages wrapped in sidebar layouts */}
-          <Route path="/classroom" element={
-            <ProtectedRoute>
-              <Layout>
-                <Classroom />
-              </Layout>
-            </ProtectedRoute>
-          } />
+            {/* Teacher Dashboards */}
+            <Route path="/teacher-dashboard" element={
+              <ProtectedRoute allowedRole="faculty">
+                <Layout>
+                  <TeacherDashboard />
+                </Layout>
+              </ProtectedRoute>
+            } />
 
-          <Route path="/attendance" element={
-            <ProtectedRoute>
-              <Layout>
-                <Attendance />
-              </Layout>
-            </ProtectedRoute>
-          } />
+            {/* Shared Pages wrapped in sidebar layouts */}
+            <Route path="/classroom" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Classroom />
+                </Layout>
+              </ProtectedRoute>
+            } />
 
-          <Route path="/timetable" element={
-            <ProtectedRoute>
-              <Layout>
-                <Timetable />
-              </Layout>
-            </ProtectedRoute>
-          } />
+            <Route path="/attendance" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Attendance />
+                </Layout>
+              </ProtectedRoute>
+            } />
 
-          <Route path="/messages" element={
-            <ProtectedRoute>
-              <Layout>
-                <Messages />
-              </Layout>
-            </ProtectedRoute>
-          } />
+            <Route path="/timetable" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Timetable />
+                </Layout>
+              </ProtectedRoute>
+            } />
 
-          <Route path="/groups" element={
-            <ProtectedRoute>
-              <Layout>
-                <Groups />
-              </Layout>
-            </ProtectedRoute>
-          } />
+            <Route path="/messages" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Messages />
+                </Layout>
+              </ProtectedRoute>
+            } />
 
-          <Route path="/lost-found" element={
-            <ProtectedRoute>
-              <Layout>
-                <LostFound />
-              </Layout>
-            </ProtectedRoute>
-          } />
+            <Route path="/groups" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Groups />
+                </Layout>
+              </ProtectedRoute>
+            } />
 
-          <Route path="/settings" element={
-            <ProtectedRoute>
-              <Layout>
-                <Settings />
-              </Layout>
-            </ProtectedRoute>
-          } />
+            <Route path="/lost-found" element={
+              <ProtectedRoute>
+                <Layout>
+                  <LostFound />
+                </Layout>
+              </ProtectedRoute>
+            } />
 
-          {/* Fallback to landing */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </AuthProvider>
+            <Route path="/settings" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Settings />
+                </Layout>
+              </ProtectedRoute>
+            } />
+
+            {/* 404 page */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+
+          {/* AI Chat Widget (floating, available on all pages) */}
+          <AIChatWidget />
+        </AuthProvider>
+      </ToastProvider>
     </ThemeProvider>
   );
 }
