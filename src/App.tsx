@@ -7,6 +7,7 @@ import { Layout } from './components/Layout';
 import { CustomCursor } from './components/CustomCursor';
 import { CommandPalette } from './components/CommandPalette';
 import { AIChatWidget } from './components/AIChatWidget';
+import { AnimatedBackground } from './components/AnimatedBackground';
 
 // Pages
 import { Landing } from './pages/Landing';
@@ -44,6 +45,8 @@ function App() {
     <ThemeProvider>
       <ToastProvider>
         <AuthProvider>
+          <AnimatedBackground />
+          
           {/* Global overlays */}
           <CustomCursor />
           <CommandPalette />

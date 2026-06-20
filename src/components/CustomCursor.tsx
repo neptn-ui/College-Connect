@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTheme } from '../contexts/ThemeContext';
 
 export const CustomCursor: React.FC = () => {
+  const { isPointerEnabled } = useTheme();
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
   
@@ -12,6 +14,8 @@ export const CustomCursor: React.FC = () => {
   const ring = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
+    if (!isPointerEnabled) return;
+    
     // Only enable on non-touch devices
     if (window.matchMedia('(hover: none)').matches) {
       setIsHidden(true);
@@ -67,9 +71,9 @@ export const CustomCursor: React.FC = () => {
       document.removeEventListener('mouseenter', onMouseEnter);
       cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [isPointerEnabled]);
 
-  if (isHidden) return null;
+  if (!isPointerEnabled || isHidden) return null;
 
   return (
     <>

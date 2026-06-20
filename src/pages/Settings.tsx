@@ -371,6 +371,20 @@ export const Settings: React.FC = () => {
                     ))}
                   </div>
                 </div>
+
+                {/* Pointer Toggle */}
+                <div className="pt-3 border-t border-white/10">
+                  <label className="flex items-center justify-between cursor-pointer">
+                    <span className="text-xs font-medium text-text-primary">Custom Mouse Pointer</span>
+                    <input
+                      type="checkbox"
+                      checked={useTheme().isPointerEnabled}
+                      onChange={(e) => useTheme().setIsPointerEnabled(e.target.checked)}
+                      className="w-4 h-4 rounded text-brand cursor-pointer"
+                    />
+                  </label>
+                  <p className="text-[10px] text-text-secondary mt-1">Disabling restores the default OS cursor</p>
+                </div>
               </div>
             </Card>
           </ScrollReveal>

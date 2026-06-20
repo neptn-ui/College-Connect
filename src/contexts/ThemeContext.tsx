@@ -8,6 +8,8 @@ interface ThemeContextType {
   toggleTheme: () => void;
   colorTheme: ThemeName;
   setColorTheme: (theme: ThemeName) => void;
+  isPointerEnabled: boolean;
+  setIsPointerEnabled: (enabled: boolean) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -26,6 +28,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const saved = localStorage.getItem('colorTheme') as ThemeName;
     if (saved && themes[saved]) return saved;
     return 'purple-night';
+  });
+
+  const [isPointerEnabled, setIsPointerEnabledState] = useState<boolean>(() => {
+    const saved = localStorage.getItem('pointerEnabled');
+    if (saved !== null) return saved === 'true';
+    return true; // enabled by default
   });
 
   useEffect(() => {
@@ -49,11 +57,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     root.style.setProperty('--border-glow', themeDef.glow);
     root.style.setProperty('--bg-gradient-layers', themeDef.bgGradient);
     
-    // For convenience in some tailwind classes we might use these directly
-    // root.style.setProperty('--accent-glow', themeDef.glow);
-    
     localStorage.setItem('colorTheme', colorTheme);
   }, [colorTheme]);
+
+  useEffect(() => {
+    localStorage.setItem('pointerEnabled', isPointerEnabled.toString());
+  }, [isPointerEnabled]);
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
@@ -63,8 +72,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setColorThemeState(newTheme);
   };
 
+  const setIsPointerEnabled = (enabled: boolean) => {
+    setIsPointerEnabledState(enabled);
+  };
+
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, colorTheme, setColorTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, colorTheme, setColorTheme, isPointerEnabled, setIsPointerEnabled }}>
       {children}
     </ThemeContext.Provider>
   );
