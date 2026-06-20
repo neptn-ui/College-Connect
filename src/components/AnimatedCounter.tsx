@@ -8,6 +8,7 @@ interface AnimatedCounterProps {
   prefix?: string;
   suffix?: string;
   className?: string;
+  decimals?: number;
 }
 
 export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
@@ -15,10 +16,11 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
   duration = 2000,
   prefix = '',
   suffix = '',
-  className = ''
+  className = '',
+  decimals = 0
 }) => {
   const { ref, isVisible } = useScrollReveal({ threshold: 0.1 });
-  const count = useCountUp(value, duration, isVisible);
+  const count = useCountUp(value, duration, isVisible, decimals);
 
   return (
     <span ref={ref} className={className}>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -7,6 +7,11 @@ import { Button } from '../components/Button';
 import { Modal } from '../components/Modal';
 import { ScrollReveal } from '../components/ScrollReveal';
 import { AnimatedCounter } from '../components/AnimatedCounter';
+import { SkeletonDashboard } from '../components/SkeletonLoader';
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  AreaChart, Area, CartesianGrid, Cell
+} from 'recharts';
 import { 
   Users, FileText, CheckCircle, BarChart3, 
   Plus, FileSpreadsheet, ArrowRight, UserCheck, Calendar 
@@ -22,6 +27,12 @@ export const TeacherDashboard: React.FC = () => {
   const toast = useToast();
 
   const [activeTab, setActiveTab] = useState<'overview' | 'assignments' | 'grades' | 'analytics'>('overview');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1200);
+    return () => clearTimeout(timer);
+  }, []);
   
   // Grading Modal State
   const [selectedSub, setSelectedSub] = useState<Submission | null>(null);
@@ -33,6 +44,7 @@ export const TeacherDashboard: React.FC = () => {
   const [selectedClassId, setSelectedClassId] = useState<string>(classrooms[0]?.id || '');
 
   if (!currentUser) return null;
+  if (isLoading) return <SkeletonDashboard variant="teacher" />;
 
   // Taught classes
   const myClasses = classrooms.filter(c => c.facultyId === currentUser.id || c.facultyId === 'fac-01');
@@ -115,8 +127,7 @@ export const TeacherDashboard: React.FC = () => {
     toast.success('Gradebook exported successfully!');
   };
 
-  // SVG Chart Computations for Analytics tab
-  // 1. Grade distribution (Histogram)
+  // Chart Data for Analytics tab
   const gradeDistribution = [
     { range: '90-100', count: 18, pct: 40 },
     { range: '80-89', count: 15, pct: 33 },
@@ -125,9 +136,38 @@ export const TeacherDashboard: React.FC = () => {
     { range: '<60', count: 0, pct: 0 }
   ];
 
-  // 2. Trendlines (student performance over weeks)
-  // We can render SVG polyline
-  const trendPoints = "10,90 80,75 150,85 220,60 290,50";
+  const trendData = [
+    { chapter: 'Ch.1 Basics', score: 62 },
+    { chapter: 'Ch.2 Search', score: 71 },
+    { chapter: 'Ch.3 Sorting', score: 68 },
+    { chapter: 'Ch.4 Graphs', score: 79 },
+    { chapter: 'Ch.5 Tries', score: 85 },
+  ];
+
+  const attendanceData = [
+    { week: 'Week 1', value: 94 },
+    { week: 'Week 2', value: 91 },
+    { week: 'Week 3', value: 88 },
+    { week: 'Week 4', value: 82 },
+    { week: 'Week 5', value: 87 },
+  ];
+
+  const GRADE_COLORS = ['#22c55e', '#3b82f6', '#a855f7', '#f59e0b', '#ef4444'];
+
+  // Custom tooltip for charts
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="glass-panel rounded-xl px-3 py-2 border border-white/10 shadow-xl">
+          <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">{label}</p>
+          <p className="text-sm font-bold text-text-primary mt-0.5">
+            {payload[0].value}{typeof payload[0].value === 'number' && payload[0].dataKey === 'pct' ? '% students' : payload[0].dataKey === 'value' ? '%' : ' students'}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="space-y-6">
@@ -435,100 +475,107 @@ export const TeacherDashboard: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Grade Distribution Bar Graph (CSS bars) */}
+              {/* Grade Distribution — Recharts BarChart */}
               <Card hoverEffect={false} padding="lg" className="space-y-4">
                 <div>
                   <h3 className="font-bold text-text-primary">Grade Distribution</h3>
                   <p className="text-xs text-text-secondary mt-0.5">Histogram range for recent CSE external reports.</p>
                 </div>
-
-                <div className="space-y-3 pt-2">
-                  {gradeDistribution.map(dist => (
-                    <div key={dist.range} className="space-y-1">
-                      <div className="flex justify-between text-xs font-semibold text-text-secondary">
-                        <span>Marks: {dist.range}</span>
-                        <span>{dist.count} Students ({dist.pct}%)</span>
-                      </div>
-                      <div className="h-3 rounded-full bg-white/5 overflow-hidden border border-white/5">
-                        <div 
-                          className="h-full bg-linear-to-r from-brand to-[#958ef0] rounded-full transition-all duration-500"
-                          style={{ width: `${dist.pct}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                <div className="pt-2" style={{ height: 220 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={gradeDistribution} layout="vertical" barCategoryGap="20%">
+                      <defs>
+                        <linearGradient id="gradeGradient" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="var(--color-brand)" />
+                          <stop offset="100%" stopColor="var(--color-brand-light)" />
+                        </linearGradient>
+                      </defs>
+                      <XAxis type="number" hide />
+                      <YAxis
+                        dataKey="range" type="category" width={55}
+                        tick={{ fill: '#A1A1AA', fontSize: 11, fontWeight: 600 }}
+                        axisLine={false} tickLine={false}
+                      />
+                      <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
+                      <Bar dataKey="pct" radius={[0, 8, 8, 0]} animationDuration={1200} animationBegin={200}>
+                        {gradeDistribution.map((_, index) => (
+                          <Cell key={`cell-${index}`} fill={GRADE_COLORS[index]} fillOpacity={0.85} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
               </Card>
 
-              {/* Performance trendline */}
+              {/* Performance Trendline — Recharts AreaChart */}
               <Card hoverEffect={false} padding="lg" className="space-y-4 flex flex-col justify-between">
                 <div>
                   <h3 className="font-bold text-text-primary">Performance Trendline</h3>
                   <p className="text-xs text-text-secondary mt-0.5">Average score fluctuation over syllabus chapters.</p>
                 </div>
-
-                {/* Responsive SVG Polyline graph */}
-                <div className="w-full flex items-center justify-center pt-2">
-                  <svg viewBox="0 0 300 100" className="w-full h-32 text-brand">
-                    {/* Grid Lines */}
-                    <line x1="0" y1="20" x2="300" y2="20" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
-                    <line x1="0" y1="50" x2="300" y2="50" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
-                    <line x1="0" y1="80" x2="300" y2="80" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
-                    
-                    {/* Trend Path */}
-                    <polyline
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      points={trendPoints}
-                      className="drop-shadow-[0_2px_8px_rgba(127,119,221,0.4)]"
-                    />
-                    
-                    {/* Points circles */}
-                    <circle cx="10" cy="90" r="4" fill="currentColor" />
-                    <circle cx="80" cy="75" r="4" fill="currentColor" />
-                    <circle cx="150" cy="85" r="4" fill="currentColor" />
-                    <circle cx="220" cy="60" r="4" fill="currentColor" />
-                    <circle cx="290" cy="50" r="4" fill="currentColor" />
-                  </svg>
-                </div>
-
-                <div className="flex justify-between text-[9px] font-bold text-text-secondary uppercase tracking-wider pt-2 border-t border-white/5">
-                  <span>Ch.1 Basics</span>
-                  <span>Ch.2 Search</span>
-                  <span>Ch.3 Sorting</span>
-                  <span>Ch.4 Graphs</span>
-                  <span>Ch.5 Tries</span>
+                <div className="pt-2 flex-1" style={{ minHeight: 180 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={trendData}>
+                      <defs>
+                        <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="var(--color-brand)" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="var(--color-brand)" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                      <XAxis
+                        dataKey="chapter" tick={{ fill: '#A1A1AA', fontSize: 9, fontWeight: 700 }}
+                        axisLine={false} tickLine={false}
+                      />
+                      <YAxis
+                        domain={[50, 100]} tick={{ fill: '#71717A', fontSize: 10 }}
+                        axisLine={false} tickLine={false} width={30}
+                      />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Area
+                        type="monotone" dataKey="score"
+                        stroke="var(--color-brand)" strokeWidth={3}
+                        fill="url(#trendFill)"
+                        dot={{ r: 5, fill: 'var(--color-brand)', stroke: '#050510', strokeWidth: 2 }}
+                        activeDot={{ r: 7, stroke: 'var(--color-brand-light)', strokeWidth: 2 }}
+                        animationDuration={1500} animationBegin={400}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
                 </div>
               </Card>
 
-              {/* Attendance patterns */}
+              {/* Attendance Patterns — Recharts BarChart */}
               <Card hoverEffect={false} padding="lg" className="lg:col-span-2 space-y-4">
                 <div>
                   <h3 className="font-bold text-text-primary">Attendance Patterns</h3>
                   <p className="text-xs text-text-secondary mt-0.5">Average weekly presence metrics across section cohorts.</p>
                 </div>
-
-                <div className="grid grid-cols-5 gap-3 pt-2 text-center">
-                  {[
-                    { w: 'Week 1', val: 94 },
-                    { w: 'Week 2', val: 91 },
-                    { w: 'Week 3', val: 88 },
-                    { w: 'Week 4', val: 82 },
-                    { w: 'Week 5', val: 87 }
-                  ].map(item => (
-                    <div key={item.w} className="space-y-2">
-                      <span className="text-[10px] text-text-secondary font-medium block">{item.w}</span>
-                      <div className="h-28 w-full bg-white/5 border border-white/5 rounded-xl flex items-end overflow-hidden p-1">
-                        <div 
-                          className="w-full bg-linear-to-t from-brand to-[#a099ff] rounded-lg transition-all"
-                          style={{ height: `${item.val}%` }}
-                          title={`${item.val}% attendance`}
-                        />
-                      </div>
-                      <span className="text-xs font-bold text-text-primary block">{item.val}%</span>
-                    </div>
-                  ))}
+                <div className="pt-2" style={{ height: 200 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={attendanceData} barCategoryGap="25%">
+                      <defs>
+                        <linearGradient id="attendGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="var(--color-brand-light)" stopOpacity={0.9} />
+                          <stop offset="100%" stopColor="var(--color-brand)" stopOpacity={0.6} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                      <XAxis
+                        dataKey="week" tick={{ fill: '#A1A1AA', fontSize: 11, fontWeight: 600 }}
+                        axisLine={false} tickLine={false}
+                      />
+                      <YAxis
+                        domain={[70, 100]} tick={{ fill: '#71717A', fontSize: 10 }}
+                        axisLine={false} tickLine={false} width={30}
+                      />
+                      <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
+                      <Bar
+                        dataKey="value" fill="url(#attendGradient)" radius={[8, 8, 0, 0]}
+                        animationDuration={1200} animationBegin={600}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
               </Card>
             </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export function useCountUp(end: number, duration: number = 2000, isVisible: boolean = true) {
+export function useCountUp(end: number, duration: number = 2000, isVisible: boolean = true, decimals: number = 0) {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
@@ -19,7 +19,8 @@ export function useCountUp(end: number, duration: number = 2000, isVisible: bool
       if (progress < duration) {
         // easeOutQuart easing function for a smooth slow-down at the end
         const easeProgress = 1 - Math.pow(1 - progress / duration, 4);
-        setCount(Math.min(end, Math.floor(easeProgress * end)));
+        const nextVal = easeProgress * end;
+        setCount(Math.min(end, nextVal));
         animationFrame = requestAnimationFrame(updateCount);
       } else {
         setCount(end);
@@ -29,7 +30,7 @@ export function useCountUp(end: number, duration: number = 2000, isVisible: bool
     animationFrame = requestAnimationFrame(updateCount);
 
     return () => cancelAnimationFrame(animationFrame);
-  }, [end, duration, isVisible]);
+  }, [end, duration, isVisible, decimals]);
 
-  return count;
+  return count.toFixed(decimals);
 }

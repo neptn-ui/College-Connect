@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -7,6 +7,7 @@ import { Button } from '../components/Button';
 import { Modal } from '../components/Modal';
 import { ScrollReveal } from '../components/ScrollReveal';
 import { AnimatedCounter } from '../components/AnimatedCounter';
+import { SkeletonDashboard } from '../components/SkeletonLoader';
 import { 
   Calendar, CheckSquare, Award, AlertTriangle, 
   ArrowRight, FileText, Upload, User, CheckCircle
@@ -25,8 +26,15 @@ export const StudentDashboard: React.FC = () => {
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [uploadFileName, setUploadFileName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1200);
+    return () => clearTimeout(timer);
+  }, []);
 
   if (!currentUser) return null;
+  if (isLoading) return <SkeletonDashboard variant="student" />;
 
   // 1. Calculate dynamic statistics
   const mySubmissions = submissions.filter(s => s.studentId === currentUser.id);
