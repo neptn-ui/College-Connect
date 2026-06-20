@@ -17,18 +17,18 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const baseStyle = 'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand/50 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98] cursor-pointer';
-  
+  const baseStyle = 'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/40 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98] cursor-pointer';
+
   const variants = {
-    primary: 'bg-linear-to-r from-brand to-[#958ef0] text-white shadow-md shadow-brand/20 hover:shadow-lg hover:shadow-brand/35 hover:-translate-y-0.5',
-    secondary: 'bg-white/10 dark:bg-white/5 border border-white/10 text-text-primary hover:bg-white/15 dark:hover:bg-white/10',
-    outline: 'border border-brand text-brand hover:bg-brand/10',
-    danger: 'bg-red-500 hover:bg-red-600 text-white shadow-md shadow-red-500/20 hover:shadow-red-500/35 hover:-translate-y-0.5',
-    ghost: 'text-text-secondary hover:bg-brand/10 hover:text-brand'
+    primary: 'bg-gradient-to-r from-[#7C3AED] to-[#A855F7] text-white shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 hover:-translate-y-0.5',
+    secondary: 'bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:border-white/15 backdrop-blur-sm',
+    outline: 'border border-[#7C3AED]/30 text-[#A855F7] hover:bg-[#7C3AED]/10 hover:border-[#7C3AED]/50',
+    danger: 'bg-red-500/90 hover:bg-red-500 text-white shadow-lg shadow-red-500/20 hover:shadow-red-500/35 hover:-translate-y-0.5',
+    ghost: 'text-[#A1A1AA] hover:bg-white/5 hover:text-white'
   };
 
   const sizes = {
-    sm: 'px-3 py-1.5 text-xs',
+    sm: 'px-3.5 py-1.5 text-xs',
     md: 'px-5 py-2.5 text-sm',
     lg: 'px-7 py-3.5 text-base'
   };
