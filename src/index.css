@@ -53,16 +53,6 @@
 
 html { scroll-behavior: smooth; }
 
-/* Desktop custom cursor setup */
-@media (pointer: fine) {
-  body {
-    cursor: none; /* We use a custom cursor */
-  }
-  /* Ensure hover elements trigger custom cursor scaling */
-  a, button, input, select, textarea, [role="button"], .cursor-pointer {
-    cursor: none;
-  }
-}
 
 body {
   font-family: var(--font-sans);
